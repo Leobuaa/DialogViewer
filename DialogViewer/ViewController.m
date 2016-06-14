@@ -38,7 +38,9 @@
          @"content" : @"I guess we'll see Mac there." },
       ];
     
+    // Register custom class
     [self.collectionView registerClass:[ContentCell class] forCellWithReuseIdentifier:@"CONTENT"];
+    [self.collectionView registerClass:[HeaderCell class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HEADER"];
     
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     contentInset.top = 20;
@@ -48,6 +50,9 @@
     UICollectionViewLayout *layout = self.collectionView.collectionViewLayout;
     UICollectionViewFlowLayout *flow = (UICollectionViewFlowLayout *)layout;
     flow.sectionInset = UIEdgeInsetsMake(10, 20, 30, 20);
+    
+    // Set the header size
+    flow.headerReferenceSize = CGSizeMake(100, 25);
 }
 
 - (NSArray *)wordsInSection:(NSInteger)section {
@@ -79,6 +84,17 @@
     NSArray *words = [self wordsInSection:indexPath.section];
     CGSize size = [ContentCell sizeForContentString:words[indexPath.row] forMaxWidth:collectionView.bounds.size.width];
     return size;
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    if ([kind isEqual:UICollectionElementKindSectionHeader]) {
+        HeaderCell *cell = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"HEADER" forIndexPath:indexPath];
+        
+        cell.maxWidth = collectionView.bounds.size.width;
+        cell.text = self.sections[indexPath.section][@"header"];
+        return cell;
+    }
+    return nil;
 }
 
 - (void)didReceiveMemoryWarning {
